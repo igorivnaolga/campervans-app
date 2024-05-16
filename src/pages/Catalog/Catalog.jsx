@@ -1,4 +1,2 @@
-const Catalog = () => {
-  return <div>Catalog</div>;
-};
+const Catalog = () => {};
 export default Catalog;
