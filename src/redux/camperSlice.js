@@ -3,7 +3,7 @@ import { fetchCampervans } from './service';
 import { createSlice } from '@reduxjs/toolkit';
 
 const camperSlice = createSlice({
-  name: 'camparvans',
+  name: 'campervans',
   initialState: {
     items: [],
     isLoading: false,
