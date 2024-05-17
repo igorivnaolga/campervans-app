@@ -20,7 +20,7 @@ import {
 } from './CampersList.styled';
 
 import { LuFuel, LuMapPin } from 'react-icons/lu';
-import { FaRegHeart, FaRegStar, FaStar } from 'react-icons/fa';
+import { FaRegHeart, FaStar } from 'react-icons/fa';
 import { IoBedOutline, IoPeopleOutline } from 'react-icons/io5';
 import { TbAutomaticGearbox, TbToolsKitchen2 } from 'react-icons/tb';
 import { BsWind } from 'react-icons/bs';
