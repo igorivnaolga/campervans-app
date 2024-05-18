@@ -7,7 +7,7 @@ import { FaHeart, FaRegHeart } from 'react-icons/fa';
 const FavoriteButton = ({ camper }) => {
   const dispatch = useDispatch();
   const favorites = useSelector(selectFavorites);
-  const isFavorite = favorites.some(fav => fav.id === camper.id);
+  const isFavorite = favorites.some(fav => fav._id === camper._id);
 
   const handleFavoriteClick = () => {
     if (isFavorite) {
@@ -16,10 +16,14 @@ const FavoriteButton = ({ camper }) => {
       dispatch(addFavorite(camper));
     }
   };
-  console.log(camper.id);
+
   return (
     <FavButton onClick={handleFavoriteClick}>
-      {isFavorite ? <FaHeart size="20px" /> : <FaRegHeart size="20px" />}
+      {isFavorite ? (
+        <FaHeart size="20px" color="#E44848" />
+      ) : (
+        <FaRegHeart size="20px" />
+      )}
     </FavButton>
   );
 };
