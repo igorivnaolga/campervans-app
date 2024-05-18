@@ -1,4 +1,6 @@
+import { H1 } from './Home.styled';
+
 const Home = () => {
-  return <div>Home</div>;
+  return <H1>Cheap travel, amazing places</H1>;
 };
 export default Home;

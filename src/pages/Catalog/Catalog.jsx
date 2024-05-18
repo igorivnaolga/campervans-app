@@ -4,13 +4,17 @@ import {
   selectCamper,
   selectError,
   selectIsLoading,
+  selectVisibleCampers,
 } from '../../redux/selectors';
 import { fetchCampervans } from '../../redux/service';
 import { CampersList } from 'components/CampersList/CampersList';
+import { LoadMoreBtn } from './Catalog.styled';
+import { loadMoreCampers } from '../../redux/camperSlice';
 
 const Catalog = () => {
   const dispatch = useDispatch();
   const campervans = useSelector(selectCamper);
+  const visibleCampers = useSelector(selectVisibleCampers);
   const isLoading = useSelector(selectIsLoading);
   const error = useSelector(selectError);
 
@@ -18,6 +22,10 @@ const Catalog = () => {
     dispatch(fetchCampervans());
   }, [dispatch]);
   console.log(campervans);
+
+  const handleLoadMoreCampers = () => {
+    dispatch(loadMoreCampers());
+  };
 
   return (
     <div>
@@ -28,7 +36,10 @@ const Catalog = () => {
         <p>Loading...</p>
       ) : (
         <>
-          <CampersList campers={campervans} />
+          <CampersList campers={campervans.slice(0, visibleCampers)} />
+          {campervans.length > visibleCampers && (
+            <LoadMoreBtn onClick={handleLoadMoreCampers}>Load more</LoadMoreBtn>
+          )}
         </>
       )}
     </div>

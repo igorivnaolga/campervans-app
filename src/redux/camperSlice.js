@@ -6,8 +6,15 @@ const camperSlice = createSlice({
   name: 'campervans',
   initialState: {
     items: [],
+    visibleCampers: 4,
     isLoading: false,
     error: null,
+  },
+
+  reducers: {
+    loadMoreCampers(state) {
+      state.visibleCampers += 4;
+    },
   },
   extraReducers: builder => {
     builder
@@ -27,3 +34,4 @@ const camperSlice = createSlice({
 });
 
 export const camperReducer = camperSlice.reducer;
+export const { loadMoreCampers } = camperSlice.actions;
