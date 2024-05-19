@@ -114,7 +114,6 @@ const CamperCard = ({ camper }) => {
         </FeatureList>
         <ShowMoreButton>Show more</ShowMoreButton>
       </InfoContainer>
-      )
     </ItemStyle>
   );
 };
