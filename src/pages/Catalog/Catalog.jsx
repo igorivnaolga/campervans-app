@@ -21,7 +21,6 @@ const Catalog = () => {
   useEffect(() => {
     dispatch(fetchCampervans());
   }, [dispatch]);
-  console.log(campervans);
 
   const handleLoadMoreCampers = () => {
     dispatch(loadMoreCampers());

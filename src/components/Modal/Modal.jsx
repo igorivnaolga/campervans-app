@@ -1,6 +1,13 @@
+import { useGlobalContext } from 'context/GlobalProvider/GlobalProvider';
+import { useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import {
   CamperDescription,
-  CamperNamePrice,
+  CloseButton,
+  ModalContainer,
+  ModalOverlay,
+} from './Modal.styled';
+import {
   CamperPrice,
   CamperRatingLocation,
   CamperTitle,
@@ -8,26 +15,33 @@ import {
   FeaturesItem,
   ImageContainer,
   ImageStyle,
-  InfoContainer,
-  ItemStyle,
   LocationContainer,
-  PriceFavContainer,
   RatingButton,
   RatingContainer,
-  ShowMoreButton,
-} from '../CamperCard/CamperCard.styled';
-
-import { LuFuel, LuMapPin } from 'react-icons/lu';
+} from '../../components/CamperCard/CamperCard.styled';
 import { FaStar } from 'react-icons/fa';
+import { LuFuel, LuMapPin } from 'react-icons/lu';
 import { IoBedOutline, IoPeopleOutline } from 'react-icons/io5';
 import { TbAutomaticGearbox, TbToolsKitchen2 } from 'react-icons/tb';
 import { BsWind } from 'react-icons/bs';
 
-import placeholder from '../../helpers/placeholder.jpg';
-import FavoriteButton from '../../components/FavoriteButton/FavoriteButton';
-import { useGlobalContext } from '../../context/GlobalProvider/GlobalProvider';
+const Modal = () => {
+  const {
+    isShowModal,
+    toggleModal: closeModal,
+    selectedCamper: camper,
+  } = useGlobalContext();
 
-const CamperCard = ({ camper, onClick }) => {
+  useEffect(() => {
+    const handleEsc = ({ code }) => {
+      if (code === 'Escape') closeModal();
+    };
+    document.addEventListener('keydown', handleEsc);
+    return () => document.removeEventListener('keydown', handleEsc);
+  }, [closeModal]);
+
+  if (!isShowModal || !camper) return null;
+
   const {
     _id,
     gallery,
@@ -42,30 +56,11 @@ const CamperCard = ({ camper, onClick }) => {
     engine,
     details: { beds, kitchen, airconditioner },
   } = camper;
-
-  const { toggleModal: openModal } = useGlobalContext();
-
-  return (
-    <ItemStyle key={_id}>
-      <ImageContainer>
-        <ImageStyle
-          src={gallery.length > 0 ? gallery[0] : placeholder}
-          alt={name}
-        />
-      </ImageContainer>
-      <InfoContainer>
-        <CamperNamePrice>
-          <CamperTitle>{name}</CamperTitle>
-
-          <PriceFavContainer>
-            <CamperPrice>€{price.toFixed(2)}</CamperPrice>
-            <FavoriteButton
-              camper={camper}
-              type="button"
-              aria-label="Add to favorites"
-            ></FavoriteButton>
-          </PriceFavContainer>
-        </CamperNamePrice>
+  return createPortal(
+    <ModalOverlay>
+      <ModalContainer key={_id}>
+        <CloseButton onClick={closeModal}>&times;</CloseButton>
+        <CamperTitle>{name}</CamperTitle>
         <CamperRatingLocation>
           <RatingContainer>
             <FaStar color="#FFC531" />
@@ -81,6 +76,13 @@ const CamperCard = ({ camper, onClick }) => {
             </p>
           </LocationContainer>
         </CamperRatingLocation>
+        <CamperPrice>€{price.toFixed(2)}</CamperPrice>
+        <ImageContainer>
+          <ImageStyle src={gallery[0]} alt={name} />
+          <ImageStyle src={gallery[1]} alt={name} />
+          <ImageStyle src={gallery[2]} alt={name} />
+        </ImageContainer>
+
         <CamperDescription>{description}</CamperDescription>
         <FeatureList>
           <FeaturesItem>
@@ -115,11 +117,10 @@ const CamperCard = ({ camper, onClick }) => {
             </FeaturesItem>
           )}
         </FeatureList>
-        <ShowMoreButton onClick={() => openModal(camper)}>
-          Show more
-        </ShowMoreButton>
-      </InfoContainer>
-    </ItemStyle>
+      </ModalContainer>
+    </ModalOverlay>,
+    document.getElementById('modal-root')
   );
 };
-export default CamperCard;
+
+export default Modal;

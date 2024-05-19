@@ -23,12 +23,12 @@ export const ImageContainer = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
+  gap: 16px;
 `;
 export const ImageStyle = styled.img`
   width: 290px;
   height: 310px;
   border-radius: 10px;
-  align-self: flex-start;
 `;
 
 export const InfoContainer = styled.div`
