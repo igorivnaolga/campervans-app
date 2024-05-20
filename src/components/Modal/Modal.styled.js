@@ -20,6 +20,8 @@ export const ModalContainer = styled.div`
   border-radius: 20px;
   max-width: 888px;
   width: 100%;
+  height: 80vh;
+  overflow-y: scroll;
   position: relative;
 `;
 

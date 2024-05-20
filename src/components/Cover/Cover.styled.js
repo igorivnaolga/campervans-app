@@ -28,6 +28,6 @@ export const CoverTitle = styled.h1`
   max-width: 400px;
   margin: 0 auto;
   color: #f2f4f7;
-  padding-right: 500px;
+  padding-right: 600px;
   /* padding-bottom: 240px; */
 `;
