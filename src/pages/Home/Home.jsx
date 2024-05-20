@@ -1,6 +1,10 @@
-import { H1 } from './Home.styled';
+import Cover from '../../components/Cover/Cover';
 
 const Home = () => {
-  return <H1>Cheap travel, amazing places</H1>;
+  return (
+    <>
+      <Cover />;
+    </>
+  );
 };
 export default Home;
