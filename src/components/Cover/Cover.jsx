@@ -1,6 +1,5 @@
 import {
   CoverContainer,
-  CoverContent,
   CoverOverlay,
   CoverTitle,
 } from '../../components/Cover/Cover.styled';
