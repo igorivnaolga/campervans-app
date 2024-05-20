@@ -1,15 +1,15 @@
 {
   "files": {
     "main.css": "/campervans-app/static/css/main.ef496867.css",
-    "main.js": "/campervans-app/static/js/main.58b172ee.js",
+    "main.js": "/campervans-app/static/js/main.d9057697.js",
     "static/media/cover.jpg": "/campervans-app/static/media/cover.6d1806e71c292a277cd0.jpg",
     "static/media/placeholder.jpg": "/campervans-app/static/media/placeholder.d07f6201e2ab6ad7e0ff.jpg",
     "index.html": "/campervans-app/index.html",
     "main.ef496867.css.map": "/campervans-app/static/css/main.ef496867.css.map",
-    "main.58b172ee.js.map": "/campervans-app/static/js/main.58b172ee.js.map"
+    "main.d9057697.js.map": "/campervans-app/static/js/main.d9057697.js.map"
   },
   "entrypoints": [
     "static/css/main.ef496867.css",
-    "static/js/main.58b172ee.js"
+    "static/js/main.d9057697.js"
   ]
 }
