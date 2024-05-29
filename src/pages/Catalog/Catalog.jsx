@@ -19,6 +19,7 @@ import {
 import { loadMoreCampers } from '../../redux/camperSlice';
 import { LocationFilter } from 'components/Filters/LocationFilter/LocationFilter';
 import { EquipmentFilter } from 'components/Filters/EquipmentFilter/EquipmentFilter';
+import { VehicleTypeFilter } from 'components/Filters/VehicleTypeFilter/VehicleTypeFilter';
 
 const Catalog = () => {
   const dispatch = useDispatch();
@@ -32,6 +33,7 @@ const Catalog = () => {
     TV: false,
     bathroom: false,
   });
+  const [vehicleTypeFilter, setVehicleTypeFilter] = useState('');
   const isLoading = useSelector(selectIsLoading);
   const error = useSelector(selectError);
 
@@ -48,6 +50,9 @@ const Catalog = () => {
   const handleEquipmentFilterChange = newEquipment => {
     setEquipmentFilter(prevFilter => ({ ...prevFilter, ...newEquipment }));
   };
+  const handleVehicleTypeFilterChange = newVehicleType => {
+    setVehicleTypeFilter(newVehicleType);
+  };
 
   return (
     <div>
@@ -62,6 +67,7 @@ const Catalog = () => {
             <LocationFilter onFilterChange={handleLocationFilterChange} />
             <Filters>Filters</Filters>
             <EquipmentFilter onFilterChange={handleEquipmentFilterChange} />
+            <VehicleTypeFilter onFilterChange={handleVehicleTypeFilterChange} />
             <SeacrhButton>Search</SeacrhButton>
           </div>
           <div>
