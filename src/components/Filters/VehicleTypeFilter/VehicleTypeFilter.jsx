@@ -1,4 +1,3 @@
-import { FaRegStar } from 'react-icons/fa';
 import {
   Box,
   FilterContainer,
@@ -8,7 +7,6 @@ import {
   Text,
   Title,
 } from './VehicleTypeFilter.styled';
-import { TbCamper } from 'react-icons/tb';
 
 const vehicleTypes = [
   { name: 'panelTruck', label: 'Van', icon: 'van' },
@@ -16,7 +14,7 @@ const vehicleTypes = [
   { name: 'alcove', label: 'Alcove', icon: 'alcove' },
 ];
 
-export const VehicleTypeFilter = ({ onFilterChange, selectedVehicleType }) => {
+export const VehicleTypeFilter = ({ onFilterChange, selectedVehicleType = '' }) => {
   const handleVehicleTypeChange = event => {
     const { value } = event.target;
     onFilterChange(value);
