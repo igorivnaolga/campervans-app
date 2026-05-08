@@ -15,6 +15,9 @@ const camperSlice = createSlice({
     loadMoreCampers(state) {
       state.visibleCampers += 4;
     },
+    resetVisibleCampers(state) {
+      state.visibleCampers = 4;
+    },
   },
   extraReducers: builder => {
     builder
@@ -34,4 +37,4 @@ const camperSlice = createSlice({
 });
 
 export const camperReducer = camperSlice.reducer;
-export const { loadMoreCampers } = camperSlice.actions;
+export const { loadMoreCampers, resetVisibleCampers } = camperSlice.actions;
