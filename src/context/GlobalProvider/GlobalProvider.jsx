@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from 'react';
+import { createContext, useCallback, useContext, useState } from 'react';
 
 const GlobalContext = createContext();
 
@@ -8,15 +8,19 @@ const GlobalProvider = ({ children }) => {
   const [isShowModal, setIsShowModal] = useState(false);
   const [selectedCamper, setSelectedCamper] = useState(null);
 
-  const toggleModal = (camper = null) => {
-    setIsShowModal(prev => !prev);
-    if (camper) {
-      setSelectedCamper(camper);
-    }
-  };
+  const openModal = useCallback(camper => {
+    setSelectedCamper(camper);
+    setIsShowModal(true);
+  }, []);
+
+  const closeModal = useCallback(() => {
+    setIsShowModal(false);
+    setSelectedCamper(null);
+  }, []);
+
   return (
     <GlobalContext.Provider
-      value={{ toggleModal, isShowModal, selectedCamper }}
+      value={{ openModal, closeModal, isShowModal, selectedCamper }}
     >
       {children}
     </GlobalContext.Provider>
