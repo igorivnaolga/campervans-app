@@ -26,8 +26,9 @@ import { BsWind } from 'react-icons/bs';
 import placeholder from '../../helpers/placeholder.jpg';
 import FavoriteButton from '../../components/FavoriteButton/FavoriteButton';
 import { useGlobalContext } from '../../context/GlobalProvider/GlobalProvider';
+import { formatCamperPrice } from '../../helpers/formatPrice';
 
-const CamperCard = ({ camper, onClick }) => {
+const CamperCard = ({ camper }) => {
   const {
     _id,
     gallery,
@@ -40,10 +41,14 @@ const CamperCard = ({ camper, onClick }) => {
     adults,
     transmission,
     engine,
-    details: { beds, kitchen, airconditioner },
+    details = {},
   } = camper;
 
-  const { toggleModal: openModal } = useGlobalContext();
+  const beds = details.beds ?? 0;
+  const kitchen = details.kitchen ?? 0;
+  const ac = details.airConditioner ?? details.airconditioner ?? 0;
+
+  const { openModal } = useGlobalContext();
 
   return (
     <ItemStyle key={_id}>
@@ -58,7 +63,7 @@ const CamperCard = ({ camper, onClick }) => {
           <CamperTitle>{name}</CamperTitle>
 
           <PriceFavContainer>
-            <CamperPrice>€{price.toFixed(2)}</CamperPrice>
+            <CamperPrice>{formatCamperPrice(price)}</CamperPrice>
             <FavoriteButton
               camper={camper}
               type="button"
@@ -108,7 +113,7 @@ const CamperCard = ({ camper, onClick }) => {
             {beds} beds
           </FeaturesItem>
 
-          {airconditioner >= 1 && (
+          {ac >= 1 && (
             <FeaturesItem>
               <BsWind />
               AC
