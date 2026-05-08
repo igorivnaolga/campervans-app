@@ -1,5 +1,6 @@
 import { combineReducers, configureStore } from '@reduxjs/toolkit';
 import { camperReducer } from './camperSlice';
+import { enquiryReducer } from './enquirySlice';
 import { favoritesReducer } from './favoritesSlice';
 import storage from 'redux-persist/lib/storage';
 import {
@@ -16,6 +17,7 @@ import {
 const rootReducer = combineReducers({
   campervans: camperReducer,
   favorites: favoritesReducer,
+  enquiry: enquiryReducer,
 });
 
 const persistConfig = {

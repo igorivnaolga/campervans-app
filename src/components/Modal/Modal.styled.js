@@ -267,6 +267,34 @@ export const BookingTitle = styled.h3`
   color: #101828;
 `;
 
+export const EnquiryNotice = styled.div`
+  margin: 0 0 18px;
+  padding: 14px 16px;
+  border-radius: 12px;
+  font-size: 14px;
+  line-height: 1.5;
+  font-family: Inter, system-ui, sans-serif;
+
+  ${p =>
+    p.$variant === 'success'
+      ? `
+    background: #ecfdf5;
+    border: 1px solid #6ee7b7;
+    color: #065f46;
+  `
+      : `
+    background: #fef3f2;
+    border: 1px solid #fecdca;
+    color: #b42318;
+  `}
+
+  strong {
+    display: block;
+    margin-bottom: 4px;
+    font-size: 15px;
+  }
+`;
+
 export const BookingForm = styled.form`
   display: flex;
   flex-direction: column;
@@ -335,12 +363,17 @@ export const SubmitBookingButton = styled.button`
   align-self: flex-start;
   transition: background 0.15s ease;
 
-  &:hover {
+  &:hover:not(:disabled) {
     background: #d84343;
   }
 
   &:focus-visible {
     outline: 2px solid #101828;
     outline-offset: 3px;
+  }
+
+  &:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
   }
 `;

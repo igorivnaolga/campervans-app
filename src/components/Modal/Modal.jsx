@@ -1,12 +1,14 @@
 import { useGlobalContext } from 'context/GlobalProvider/GlobalProvider';
 import { Fragment, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
+import { useDispatch, useSelector } from 'react-redux';
 import {
   BookingForm,
   BookingSection,
   BookingTitle,
   CloseButton,
   DescriptionText,
+  EnquiryNotice,
   FormError,
   FormInput,
   FormLabel,
@@ -46,6 +48,12 @@ import { TbAutomaticGearbox, TbToolsKitchen2 } from 'react-icons/tb';
 import { BsWind } from 'react-icons/bs';
 import { formatCamperPrice } from '../../helpers/formatPrice';
 import placeholder from '../../helpers/placeholder.jpg';
+import { resetEnquirySubmit, submitCamperEnquiry } from '../../redux/enquirySlice';
+import {
+  selectEnquiryLastSource,
+  selectEnquirySubmitError,
+  selectEnquirySubmitStatus,
+} from '../../redux/selectors';
 
 const emailOk = v =>
   /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(v).trim());
@@ -60,6 +68,11 @@ function formatSpecLabel(key) {
 }
 
 const Modal = () => {
+  const dispatch = useDispatch();
+  const submitStatus = useSelector(selectEnquirySubmitStatus);
+  const submitError = useSelector(selectEnquirySubmitError);
+  const lastSubmitSource = useSelector(selectEnquiryLastSource);
+
   const {
     isShowModal,
     closeModal,
@@ -140,11 +153,18 @@ const Modal = () => {
 
   useEffect(() => {
     if (camperId == null) return;
+    dispatch(resetEnquirySubmit());
     setActiveTab('features');
     setDescriptionExpanded(false);
     setForm({ name: '', email: '', bookingDate: '', comment: '' });
     setErrors({});
-  }, [camperId]);
+  }, [camperId, dispatch]);
+
+  useEffect(() => {
+    if (submitStatus !== 'succeeded') return;
+    setForm({ name: '', email: '', bookingDate: '', comment: '' });
+    setErrors({});
+  }, [submitStatus]);
 
   if (!isShowModal || !camper) return null;
 
@@ -183,19 +203,35 @@ const Modal = () => {
     return next;
   };
 
-  const handleBookingSubmit = e => {
+  const handleBookingSubmit = async e => {
     e.preventDefault();
     const next = validate();
     setErrors(next);
     if (Object.keys(next).length > 0) return;
-    window.location.reload();
+    try {
+      await dispatch(
+        submitCamperEnquiry({
+          camperId: _id,
+          camperName: name,
+          name: form.name.trim(),
+          email: form.email.trim(),
+          bookingDate: form.bookingDate,
+          comment: form.comment.trim(),
+        })
+      ).unwrap();
+    } catch {
+      /* error surfaced via submitError */
+    }
   };
 
   const handleChange = e => {
     const { name, value } = e.target;
+    if (submitStatus === 'succeeded') dispatch(resetEnquirySubmit());
     setForm(prev => ({ ...prev, [name]: value }));
     if (errors[name]) setErrors(prev => ({ ...prev, [name]: undefined }));
   };
+
+  const isSubmitting = submitStatus === 'loading';
 
   const detailEntries = Object.entries(details).filter(
     ([, v]) => v !== undefined && v !== null && v !== ''
@@ -210,6 +246,7 @@ const Modal = () => {
   return createPortal(
     <ModalOverlay onClick={handleBackdropClick}>
       <ModalContainer
+        onClick={e => e.stopPropagation()}
         key={_id}
         role="dialog"
         aria-modal="true"
@@ -392,6 +429,27 @@ const Modal = () => {
 
         <BookingSection>
           <BookingTitle>Book this camper</BookingTitle>
+          {submitStatus === 'succeeded' && (
+            <EnquiryNotice $variant="success" role="status">
+              <strong>Enquiry sent</strong>
+              Thank you — we have received your request and will contact you
+              soon.
+              {lastSubmitSource === 'local' && (
+                <>
+                  {' '}
+                  It was stored on this device because the online endpoint was
+                  unavailable. You can add a contacts resource on MockAPI to
+                  receive submissions remotely.
+                </>
+              )}
+            </EnquiryNotice>
+          )}
+          {submitStatus === 'failed' && submitError && (
+            <EnquiryNotice $variant="error" role="alert">
+              <strong>Something went wrong</strong>
+              {submitError}
+            </EnquiryNotice>
+          )}
           <BookingForm onSubmit={handleBookingSubmit} noValidate>
             <FormLabel>
               Name *
@@ -400,6 +458,7 @@ const Modal = () => {
                 value={form.name}
                 onChange={handleChange}
                 autoComplete="name"
+                disabled={isSubmitting}
               />
               {errors.name && <FormError>{errors.name}</FormError>}
             </FormLabel>
@@ -411,6 +470,7 @@ const Modal = () => {
                 value={form.email}
                 onChange={handleChange}
                 autoComplete="email"
+                disabled={isSubmitting}
               />
               {errors.email && <FormError>{errors.email}</FormError>}
             </FormLabel>
@@ -421,6 +481,7 @@ const Modal = () => {
                 name="bookingDate"
                 value={form.bookingDate}
                 onChange={handleChange}
+                disabled={isSubmitting}
               />
               {errors.bookingDate && (
                 <FormError>{errors.bookingDate}</FormError>
@@ -433,9 +494,16 @@ const Modal = () => {
                 value={form.comment}
                 onChange={handleChange}
                 rows={4}
+                disabled={isSubmitting}
               />
             </FormLabel>
-            <SubmitBookingButton type="submit">Send booking</SubmitBookingButton>
+            <SubmitBookingButton
+              type="submit"
+              disabled={isSubmitting}
+              aria-busy={isSubmitting}
+            >
+              {isSubmitting ? 'Sending…' : 'Send booking'}
+            </SubmitBookingButton>
           </BookingForm>
         </BookingSection>
       </ModalContainer>
