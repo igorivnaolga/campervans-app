@@ -1,12 +1,9 @@
 import { useState } from 'react';
-import {
-  Box,
-  Checkbox,
-  FilterContainer,
-  Icon,
-  Label,
-  Title,
-} from './EquipmentFilter.styled';
+import { Box, Checkbox, FilterContainer, Label, Title } from './EquipmentFilter.styled';
+import { BsWind } from 'react-icons/bs';
+import { MdOutlineTv } from 'react-icons/md';
+import { LuBath } from 'react-icons/lu';
+import { TbAutomaticGearbox, TbToolsKitchen2 } from 'react-icons/tb';
 
 const initialEquipmentState = {
   airConditioner: false,
@@ -17,11 +14,11 @@ const initialEquipmentState = {
 };
 
 const checkboxes = [
-  { name: 'airConditioner', label: 'AC', icon: 'ac' },
-  { name: 'automaticTransmission', label: 'Automatic', icon: 'trans' },
-  { name: 'kitchen', label: 'Kitchen', icon: 'kitchen' },
-  { name: 'TV', label: 'TV', icon: 'tv' },
-  { name: 'bathroom', label: 'Shower/WC', icon: 'shower' },
+  { name: 'airConditioner', label: 'AC', icon: BsWind },
+  { name: 'automaticTransmission', label: 'Automatic', icon: TbAutomaticGearbox },
+  { name: 'kitchen', label: 'Kitchen', icon: TbToolsKitchen2 },
+  { name: 'TV', label: 'TV', icon: MdOutlineTv },
+  { name: 'bathroom', label: 'Shower/WC', icon: LuBath },
 ];
 
 export const EquipmentFilter = ({ onFilterChange }) => {
@@ -39,23 +36,26 @@ export const EquipmentFilter = ({ onFilterChange }) => {
     <div>
       <Title>Vehicle equipment</Title>
       <FilterContainer>
-        {checkboxes.map(checkbox => (
-          <Label
-            key={checkbox.name}
-            className={equipment[checkbox.name] ? 'activeFilter' : ''}
-          >
-            <Checkbox
-              type="checkbox"
-              name={checkbox.name}
-              checked={equipment[checkbox.name]}
-              onChange={handleEquipmentChange}
-            />
-            <Box>
-              <Icon></Icon>
-              <p>{checkbox.label}</p>
-            </Box>
-          </Label>
-        ))}
+        {checkboxes.map(checkbox => {
+          const IconComponent = checkbox.icon;
+          return (
+            <Label
+              key={checkbox.name}
+              className={equipment[checkbox.name] ? 'activeFilter' : ''}
+            >
+              <Checkbox
+                type="checkbox"
+                name={checkbox.name}
+                checked={equipment[checkbox.name]}
+                onChange={handleEquipmentChange}
+              />
+              <Box>
+                <IconComponent size={28} aria-hidden />
+                <p>{checkbox.label}</p>
+              </Box>
+            </Label>
+          );
+        })}
       </FilterContainer>
     </div>
   );

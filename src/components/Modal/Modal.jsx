@@ -1,18 +1,24 @@
 import { useGlobalContext } from 'context/GlobalProvider/GlobalProvider';
-import { Fragment, useEffect, useState } from 'react';
+import { Fragment, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import {
   BookingForm,
   BookingSection,
   BookingTitle,
-  CamperDescription,
   CloseButton,
+  DescriptionText,
   FormError,
   FormInput,
   FormLabel,
   FormTextarea,
+  GalleryImg,
+  GalleryRow,
   ModalContainer,
+  ModalHeader,
   ModalOverlay,
+  PriceRow,
+  RatingMeta,
+  ReadMoreButton,
   ReviewHeader,
   ReviewItem,
   ReviewsList,
@@ -22,6 +28,7 @@ import {
   SubmitBookingButton,
   Tab,
   TabBar,
+  TabPanel,
 } from './Modal.styled';
 import {
   CamperPrice,
@@ -29,10 +36,7 @@ import {
   CamperTitle,
   FeatureList,
   FeaturesItem,
-  ImageContainer,
-  ImageStyle,
   LocationContainer,
-  RatingButton,
   RatingContainer,
 } from '../CamperCard/CamperCard.styled';
 import { FaStar } from 'react-icons/fa';
@@ -46,13 +50,27 @@ import placeholder from '../../helpers/placeholder.jpg';
 const emailOk = v =>
   /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(v).trim());
 
+function formatSpecLabel(key) {
+  const spaced = String(key)
+    .replace(/([A-Z])/g, ' $1')
+    .replace(/_/g, ' ')
+    .trim();
+  if (!spaced) return key;
+  return spaced.charAt(0).toUpperCase() + spaced.slice(1);
+}
+
 const Modal = () => {
   const {
     isShowModal,
     closeModal,
     selectedCamper: camper,
   } = useGlobalContext();
+  const camperId = camper?._id;
+  const closeBtnRef = useRef(null);
+  const descRef = useRef(null);
   const [activeTab, setActiveTab] = useState('features');
+  const [descriptionExpanded, setDescriptionExpanded] = useState(false);
+  const [hasMoreDescription, setHasMoreDescription] = useState(false);
   const [form, setForm] = useState({
     name: '',
     email: '',
@@ -60,6 +78,44 @@ const Modal = () => {
     comment: '',
   });
   const [errors, setErrors] = useState({});
+
+  const dialogTitleId =
+    camperId != null ? `camper-modal-title-${camperId}` : 'camper-modal-title';
+  const tabFeaturesId =
+    camperId != null ? `modal-tab-features-${camperId}` : 'modal-tab-features';
+  const tabReviewsId =
+    camperId != null ? `modal-tab-reviews-${camperId}` : 'modal-tab-reviews';
+  const panelFeaturesId =
+    camperId != null ? `modal-panel-features-${camperId}` : 'modal-panel-features';
+  const panelReviewsId =
+    camperId != null ? `modal-panel-reviews-${camperId}` : 'modal-panel-reviews';
+
+  const descriptionText = camper?.description ?? '';
+
+  useLayoutEffect(() => {
+    if (!isShowModal || camperId == null) return undefined;
+    if (!descriptionText.trim()) {
+      setHasMoreDescription(false);
+      return undefined;
+    }
+    if (descriptionExpanded) {
+      setHasMoreDescription(true);
+      return undefined;
+    }
+    let cancelled = false;
+    const outer = requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        if (cancelled) return;
+        const node = descRef.current;
+        if (!node) return;
+        setHasMoreDescription(node.scrollHeight > node.clientHeight + 1);
+      });
+    });
+    return () => {
+      cancelled = true;
+      cancelAnimationFrame(outer);
+    };
+  }, [isShowModal, camperId, descriptionText, descriptionExpanded]);
 
   useEffect(() => {
     const handleEsc = ({ code }) => {
@@ -70,12 +126,25 @@ const Modal = () => {
   }, [closeModal]);
 
   useEffect(() => {
-    if (camper) {
-      setActiveTab('features');
-      setForm({ name: '', email: '', bookingDate: '', comment: '' });
-      setErrors({});
-    }
-  }, [camper?._id]);
+    if (!isShowModal || camperId == null) return undefined;
+    const prevOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    const frame = requestAnimationFrame(() => {
+      closeBtnRef.current?.focus();
+    });
+    return () => {
+      cancelAnimationFrame(frame);
+      document.body.style.overflow = prevOverflow;
+    };
+  }, [isShowModal, camperId]);
+
+  useEffect(() => {
+    if (camperId == null) return;
+    setActiveTab('features');
+    setDescriptionExpanded(false);
+    setForm({ name: '', email: '', bookingDate: '', comment: '' });
+    setErrors({});
+  }, [camperId]);
 
   if (!isShowModal || !camper) return null;
 
@@ -132,75 +201,117 @@ const Modal = () => {
     ([, v]) => v !== undefined && v !== null && v !== ''
   );
 
+  const gallerySrc = gallery.length > 0 ? gallery.filter(Boolean) : [placeholder];
+
+  const handleBackdropClick = e => {
+    if (e.target === e.currentTarget) closeModal();
+  };
+
   return createPortal(
-    <ModalOverlay onClick={closeModal}>
-      <ModalContainer onClick={e => e.stopPropagation()} key={_id}>
-        <CloseButton type="button" onClick={closeModal}>
-          &times;
+    <ModalOverlay onClick={handleBackdropClick}>
+      <ModalContainer
+        key={_id}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby={dialogTitleId}
+        tabIndex={-1}
+      >
+        <CloseButton
+          ref={closeBtnRef}
+          type="button"
+          onClick={closeModal}
+          aria-label="Close camper details"
+        >
+          ×
         </CloseButton>
-        <CamperTitle>{name}</CamperTitle>
+        <ModalHeader>
+          <CamperTitle id={dialogTitleId}>{name}</CamperTitle>
+        </ModalHeader>
         <CamperRatingLocation>
           <RatingContainer>
-            <FaStar color="#FFC531" />
-
-            <RatingButton type="button">
-              {`${rating}(${reviews.length} Reviews)`}
-            </RatingButton>
+            <FaStar color="#FFC531" aria-hidden />
+            <RatingMeta>
+              {rating} ({reviews.length}{' '}
+              {reviews.length === 1 ? 'review' : 'reviews'})
+            </RatingMeta>
           </RatingContainer>
           <LocationContainer>
             <p>
-              <LuMapPin />
+              <LuMapPin aria-hidden />
               {location}
             </p>
           </LocationContainer>
         </CamperRatingLocation>
-        <CamperPrice>{formatCamperPrice(price)}</CamperPrice>
-        <ImageContainer>
-          {(gallery.length > 0 ? gallery.filter(Boolean) : [placeholder]).map(
-            (src, i) => (
-              <ImageStyle key={i} src={src} alt={`${name} ${i + 1}`} />
-            )
-          )}
-        </ImageContainer>
+        <PriceRow>
+          <CamperPrice>{formatCamperPrice(price)}</CamperPrice>
+        </PriceRow>
+        <GalleryRow aria-label="Camper photos">
+          {gallerySrc.map((src, i) => (
+            <GalleryImg key={i} src={src} alt={`${name}, photo ${i + 1}`} />
+          ))}
+        </GalleryRow>
 
-        <CamperDescription>{description}</CamperDescription>
+        {description ? (
+          <>
+            <DescriptionText
+              ref={descRef}
+              $expanded={descriptionExpanded}
+            >
+              {description}
+            </DescriptionText>
+            {(hasMoreDescription || descriptionExpanded) && (
+              <ReadMoreButton
+                type="button"
+                aria-expanded={descriptionExpanded}
+                onClick={() => setDescriptionExpanded(v => !v)}
+              >
+                {descriptionExpanded ? 'Show less' : 'Read more'}
+              </ReadMoreButton>
+            )}
+          </>
+        ) : null}
         <FeatureList>
           <FeaturesItem>
-            <IoPeopleOutline />
+            <IoPeopleOutline aria-hidden />
             {adults} adults
           </FeaturesItem>
           <FeaturesItem>
-            <TbAutomaticGearbox />
+            <TbAutomaticGearbox aria-hidden />
             {transmission}
           </FeaturesItem>
           <FeaturesItem>
-            <LuFuel />
+            <LuFuel aria-hidden />
             {engine}
           </FeaturesItem>
 
           {kitchen >= 1 && (
             <FeaturesItem>
-              <TbToolsKitchen2 />
+              <TbToolsKitchen2 aria-hidden />
               Kitchen
             </FeaturesItem>
           )}
 
           <FeaturesItem>
-            <IoBedOutline />
+            <IoBedOutline aria-hidden />
             {beds} beds
           </FeaturesItem>
 
           {ac >= 1 && (
             <FeaturesItem>
-              <BsWind />
+              <BsWind aria-hidden />
               AC
             </FeaturesItem>
           )}
         </FeatureList>
 
-        <TabBar>
+        <TabBar role="tablist" aria-label="Camper information">
           <Tab
             type="button"
+            role="tab"
+            id={tabFeaturesId}
+            aria-selected={activeTab === 'features'}
+            aria-controls={panelFeaturesId}
+            tabIndex={activeTab === 'features' ? 0 : -1}
             $active={activeTab === 'features'}
             onClick={() => setActiveTab('features')}
           >
@@ -208,6 +319,11 @@ const Modal = () => {
           </Tab>
           <Tab
             type="button"
+            role="tab"
+            id={tabReviewsId}
+            aria-selected={activeTab === 'reviews'}
+            aria-controls={panelReviewsId}
+            tabIndex={activeTab === 'reviews' ? 0 : -1}
             $active={activeTab === 'reviews'}
             onClick={() => setActiveTab('reviews')}
           >
@@ -215,7 +331,12 @@ const Modal = () => {
           </Tab>
         </TabBar>
 
-        {activeTab === 'features' && (
+        <TabPanel
+          id={panelFeaturesId}
+          role="tabpanel"
+          aria-labelledby={tabFeaturesId}
+          hidden={activeTab !== 'features'}
+        >
           <SpecGrid>
             {children != null && (
               <Fragment key="children-count">
@@ -237,14 +358,19 @@ const Modal = () => {
             <SpecDef>{consumption}</SpecDef>
             {detailEntries.map(([key, val]) => (
               <Fragment key={key}>
-                <SpecTerm>{key}</SpecTerm>
+                <SpecTerm>{formatSpecLabel(key)}</SpecTerm>
                 <SpecDef>{String(val)}</SpecDef>
               </Fragment>
             ))}
           </SpecGrid>
-        )}
+        </TabPanel>
 
-        {activeTab === 'reviews' && (
+        <TabPanel
+          id={panelReviewsId}
+          role="tabpanel"
+          aria-labelledby={tabReviewsId}
+          hidden={activeTab !== 'reviews'}
+        >
           <ReviewsList>
             {reviews.length === 0 ? (
               <ReviewItem>No reviews yet.</ReviewItem>
@@ -254,7 +380,7 @@ const Modal = () => {
                   <ReviewHeader>
                     <span>{rev.reviewer_name}</span>
                     <span>
-                      <FaStar color="#FFC531" /> {rev.reviewer_rating}
+                      <FaStar color="#FFC531" aria-hidden /> {rev.reviewer_rating}
                     </span>
                   </ReviewHeader>
                   <p>{rev.comment}</p>
@@ -262,7 +388,7 @@ const Modal = () => {
               ))
             )}
           </ReviewsList>
-        )}
+        </TabPanel>
 
         <BookingSection>
           <BookingTitle>Book this camper</BookingTitle>

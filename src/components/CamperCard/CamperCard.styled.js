@@ -19,16 +19,40 @@ export const ItemStyle = styled.li`
   overflow: hidden;
 `;
 
-export const ImageContainer = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 16px;
-`;
 export const ImageStyle = styled.img`
   width: 290px;
   height: 310px;
   border-radius: 10px;
+  display: block;
+  transition: opacity 0.2s ease;
+`;
+
+export const PhotoButton = styled.button`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
+  border-radius: 10px;
+  flex-shrink: 0;
+
+  &:focus-visible {
+    outline: 2px solid #e44848;
+    outline-offset: 3px;
+  }
+
+  &:hover img {
+    opacity: 0.92;
+  }
+
+  &:active img {
+    opacity: 0.88;
+  }
 `;
 
 export const InfoContainer = styled.div`

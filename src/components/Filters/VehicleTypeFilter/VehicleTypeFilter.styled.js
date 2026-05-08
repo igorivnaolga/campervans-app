@@ -24,13 +24,11 @@ export const FilterContainer = styled.div`
 
 export const Label = styled.label`
   display: flex;
+  align-items: center;
+  justify-content: center;
 
   margin-bottom: 5px;
   cursor: pointer;
-
-  display: flex;
-  align-items: center;
-  justify-content: center;
 
   height: 95px;
   width: 100px;
@@ -39,8 +37,16 @@ export const Label = styled.label`
   border: 1px solid rgba(16, 24, 40, 0.2);
   mix-blend-mode: multiply;
 
+  svg {
+    color: #101828;
+  }
+
   &.activeFilter {
     border: 2px solid #e44848;
+  }
+
+  &.activeFilter svg {
+    color: #e44848;
   }
 `;
 
@@ -58,22 +64,20 @@ export const Title = styled.h3`
   line-height: 24px; /* 120% */
 `;
 
-export const Icon = styled.svg`
-  width: 40px;
-  height: 28px;
-  stroke: #101010;
-  fill: #101010;
-`;
-
 export const Box = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
 
   gap: 8px;
+
+  svg {
+    flex-shrink: 0;
+  }
 `;
 
 export const Text = styled.p`
+  margin: 0;
   color: #101828;
   text-align: center;
   font-family: Inter;

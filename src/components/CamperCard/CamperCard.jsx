@@ -6,11 +6,11 @@ import {
   CamperTitle,
   FeatureList,
   FeaturesItem,
-  ImageContainer,
   ImageStyle,
   InfoContainer,
   ItemStyle,
   LocationContainer,
+  PhotoButton,
   PriceFavContainer,
   RatingButton,
   RatingContainer,
@@ -52,12 +52,16 @@ const CamperCard = ({ camper }) => {
 
   return (
     <ItemStyle key={_id}>
-      <ImageContainer>
+      <PhotoButton
+        type="button"
+        onClick={() => openModal(camper)}
+        aria-label={`Open details for ${name}`}
+      >
         <ImageStyle
           src={gallery.length > 0 ? gallery[0] : placeholder}
-          alt={name}
+          alt=""
         />
-      </ImageContainer>
+      </PhotoButton>
       <InfoContainer>
         <CamperNamePrice>
           <CamperTitle>{name}</CamperTitle>

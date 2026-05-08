@@ -1,7 +1,8 @@
+import { IoGridOutline } from 'react-icons/io5';
+import { TbCamper, TbCaravan, TbHome } from 'react-icons/tb';
 import {
   Box,
   FilterContainer,
-  Icon,
   Label,
   Radio,
   Text,
@@ -9,12 +10,15 @@ import {
 } from './VehicleTypeFilter.styled';
 
 const vehicleTypes = [
-  { name: 'panelTruck', label: 'Van', icon: 'van' },
-  { name: 'fullyIntegrated', label: 'Fully Integrated', icon: 'fully' },
-  { name: 'alcove', label: 'Alcove', icon: 'alcove' },
+  { name: 'panelTruck', label: 'Van', Icon: TbCamper },
+  { name: 'fullyIntegrated', label: 'Fully Integrated', Icon: TbCaravan },
+  { name: 'alcove', label: 'Alcove', Icon: TbHome },
 ];
 
-export const VehicleTypeFilter = ({ onFilterChange, selectedVehicleType = '' }) => {
+export const VehicleTypeFilter = ({
+  onFilterChange,
+  selectedVehicleType = '',
+}) => {
   const handleVehicleTypeChange = event => {
     const { value } = event.target;
     onFilterChange(value);
@@ -33,30 +37,33 @@ export const VehicleTypeFilter = ({ onFilterChange, selectedVehicleType = '' }) 
             onChange={handleVehicleTypeChange}
           />
           <Box>
-            {/* <FaRegStar size="24px" /> */}
-
+            <IoGridOutline size={28} aria-hidden />
             <Text>All</Text>
           </Box>
         </Label>
-        {vehicleTypes.map(type => (
-          <Label
-            key={type.name}
-            className={selectedVehicleType === type.name ? 'activeFilter' : ''}
-          >
-            <Radio
-              type="radio"
-              name="vehicleType"
-              value={type.name}
-              checked={selectedVehicleType === type.name}
-              onChange={handleVehicleTypeChange}
-            />
-            <Box>
-              {/* <TbCamper size="24px" /> */}
-
-              <Text>{type.label}</Text>
-            </Box>
-          </Label>
-        ))}
+        {vehicleTypes.map(type => {
+          const { Icon } = type;
+          return (
+            <Label
+              key={type.name}
+              className={
+                selectedVehicleType === type.name ? 'activeFilter' : ''
+              }
+            >
+              <Radio
+                type="radio"
+                name="vehicleType"
+                value={type.name}
+                checked={selectedVehicleType === type.name}
+                onChange={handleVehicleTypeChange}
+              />
+              <Box>
+                <Icon size={28} aria-hidden />
+                <Text>{type.label}</Text>
+              </Box>
+            </Label>
+          );
+        })}
       </FilterContainer>
     </div>
   );

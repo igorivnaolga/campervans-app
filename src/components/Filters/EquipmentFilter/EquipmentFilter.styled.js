@@ -36,19 +36,21 @@ export const Label = styled.label`
 
   cursor: pointer;
 
+  svg {
+    color: #101828;
+  }
+
   &.activeFilter {
     border: 2px solid #e44848;
+  }
+
+  &.activeFilter svg {
+    color: #e44848;
   }
 `;
 
 export const Checkbox = styled.input`
   display: none;
-`;
-
-export const Icon = styled.svg`
-  width: 32px;
-  height: 32px;
-  stroke: #101010;
 `;
 
 export const Box = styled.div`
@@ -57,6 +59,10 @@ export const Box = styled.div`
   align-items: center;
 
   gap: 8px;
+
+  svg {
+    flex-shrink: 0;
+  }
 `;
 
 export const Title = styled.h4`

@@ -32,11 +32,13 @@ export const Input = styled.input`
   margin-top: 8px;
 `;
 
-export const Icon = styled.svg`
+export const InputIcon = styled.span`
   position: absolute;
   top: 48px;
   left: 18px;
-
-  width: 18px;
-  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  color: #667085;
 `;

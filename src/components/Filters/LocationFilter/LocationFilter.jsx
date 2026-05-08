@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { Container, Icon, Input, Label } from './LocationFilter.styled';
+import { LuMapPin } from 'react-icons/lu';
+import { Container, Input, InputIcon, Label } from './LocationFilter.styled';
 
 export const LocationFilter = ({ onFilterChange }) => {
   const [location, setLocation] = useState('');
@@ -20,7 +21,9 @@ export const LocationFilter = ({ onFilterChange }) => {
           value={location}
           onChange={handleFilterChange}
         />
-        <Icon></Icon>
+        <InputIcon aria-hidden>
+          <LuMapPin size={20} />
+        </InputIcon>
       </Label>
     </Container>
   );
